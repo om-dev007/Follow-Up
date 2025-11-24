@@ -89,6 +89,17 @@ const LeadTable = () => {
     )
   }
 
+  if (leads.length === 0) {
+    return (
+      <div className="text-center p-8 border rounded-lg">
+        <h3 className="text-xl font-semibold">No Leads Found</h3>
+        <p className="text-muted-foreground mt-2">
+          No leads have been submitted yet.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
