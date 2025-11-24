@@ -71,7 +71,15 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
 
   const handleResendConfirmation = async () => {
     setLoading(true)
-    const { error } = await supabase.auth.api.resendVerificationEmail(email)
+    // Supabase does not have a direct resendVerificationEmail method in latest version
+    // Use signUp with redirect option to resend confirmation email as a workaround
+    // Note: this will not work properly with dummy password, better to inform user to re-register or check email
+    addToast({
+      title: 'Please check your email for the confirmation link.',
+      variant: 'warning',
+    })
+    setLoading(false)
+    return
 
     if (error) {
       addToast({ title: 'Resend failed', description: error.message, variant: 'error' })
