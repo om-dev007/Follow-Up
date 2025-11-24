@@ -1,4 +1,5 @@
 import LeadForm from '@/components/LeadForm'
+import LeadTable from '@/components/LeadTable'
 
 const App = () => {
   const handleSubmit = async (data: {
@@ -31,6 +32,9 @@ const App = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <LeadForm onSubmit={handleSubmit} />
+        <div className="mt-8">
+          <LeadTable />
+        </div>
       </div>
     </div>
   )
