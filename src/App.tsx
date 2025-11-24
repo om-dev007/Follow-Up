@@ -1,9 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import LeadForm from '@/components/LeadForm'
 import LeadTable from '@/components/LeadTable'
+import LoginPage from '@/components/LoginPage'
+import { supabase } from '@/lib/supabase'
+
+import type { User } from '@supabase/supabase-js'
 
 const App = () => {
+  const [user, setUser] = useState<User | null>(null)
   const [activeView, setActiveView] = useState<'form' | 'table'>('form')
+
+  useEffect(() => {
+    supabase.auth.getUser().then((result) => {
+      setUser(result.data.user)
+    })
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      authListener?.subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogin = () => {
+    supabase.auth.getUser().then((result) => setUser(result.data.user))
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
 
   const handleSubmit = async (data: {
     name: string
@@ -13,20 +41,24 @@ const App = () => {
     interest?: string
     note?: string
   }) => {
-    // Handle form submission here
     console.log('Form submitted:', data)
-    // On successful submission, you might want to switch to the table view
-    // setActiveView('table'); 
+  }
+
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} />
   }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-8">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Lead Management System</h1>
-          <p className="text-muted-foreground mt-2">
-            Submit new leads and view existing ones
-          </p>
+          <button
+            onClick={handleLogout}
+            className="bg-destructive text-destructive-foreground px-4 py-2 rounded-md font-semibold hover:bg-destructive/90 transition"
+          >
+            Sign Out
+          </button>
         </div>
 
         <div className="flex justify-center mb-8">
